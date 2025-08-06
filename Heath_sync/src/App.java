@@ -16,7 +16,7 @@ public class App {
       frame.add(jtp);
       frame.setVisible(true);
 
-       
+    
 
 
 
@@ -25,10 +25,24 @@ public class App {
 }
 class Patientpanel extends JPanel{
     Patientpanel(){
+            setLayout(new BorderLayout(10,10));
         JButton a=new JButton("Welcome");
-        add(a);
+        add(a, BorderLayout.NORTH);
+
+        JButton registerBtn = new JButton("Register");
+        JPanel centerPanel = new JPanel();
+        centerPanel.add(registerBtn);
+        add(centerPanel, BorderLayout.CENTER);
+
+        // Action for Register button
+        registerBtn.addActionListener(e ->
+            JOptionPane.showMessageDialog(this, "Registration page will open soon!")
+        );
     }
 }
+
+    
+
 class doctorpanel extends JPanel{
     doctorpanel(){
         JButton b=new JButton("Welcome");
