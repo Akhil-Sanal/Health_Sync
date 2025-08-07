@@ -12,7 +12,7 @@ public class App {
         frame.setSize(500,500);
         
        JTabbedPane jtp =new JTabbedPane();
-       jtp.addTab("patient",new Patientpanel());
+       jtp.addTab("patient",new Patientpanel(jtp));
        jtp.addTab("doctor",new doctorpanel(jtp));
       
       frame.add(jtp);
@@ -25,23 +25,84 @@ public class App {
 
     }
 }
-class Patientpanel extends JPanel{
-    Patientpanel(){
-        setLayout(new BorderLayout(10,10));
-        JButton a=new JButton("Welcome");
-        add(a, BorderLayout.NORTH);
+class Patientpanel extends JPanel {
+    Patientpanel(JTabbedPane parentTabbedPane) {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JButton registerBtn = new JButton("Register");
-        JPanel centerPanel = new JPanel();
-        centerPanel.add(registerBtn);
-        add(centerPanel, BorderLayout.CENTER);
+        JButton welcomeButton = new JButton("Welcome Patient");
+        JButton registerButton = new JButton("Register Patient");
 
-        // Action for Register button
-        registerBtn.addActionListener(e ->
-            JOptionPane.showMessageDialog(this, "Registration page will open soon!")
-        );
+        welcomeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        add(Box.createVerticalGlue());
+        add(welcomeButton);
+        add(Box.createRigidArea(new Dimension(0, 10)));
+        add(registerButton);
+        add(Box.createVerticalGlue());
+
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int existingTabIndex = parentTabbedPane.indexOfTab("Patient Registration");
+                if (existingTabIndex == -1) {
+                    PatientRegistrationPanel regPanel = new PatientRegistrationPanel();
+                    parentTabbedPane.addTab("Patient Registration", regPanel);
+                    parentTabbedPane.setSelectedComponent(regPanel);
+                } else {
+                    parentTabbedPane.setSelectedIndex(existingTabIndex);
+                }
+            }
+        });
     }
 }
+
+class PatientRegistrationPanel extends JPanel {
+    PatientRegistrationPanel() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.EAST;
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        add(new JLabel("Name:"), gbc);
+        gbc.gridx = 1;
+        JTextField nameField = new JTextField(20);
+        add(nameField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        add(new JLabel("Phone Number:"), gbc);
+        gbc.gridx = 1;
+        JTextField phoneNoField = new JTextField(20);
+        add(phoneNoField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        add(new JLabel("Password:"), gbc);
+        gbc.gridx = 1;
+        JPasswordField passwordField = new JPasswordField(20);
+        add(passwordField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3;
+        add(new JLabel("Confirm Password:"), gbc);
+        gbc.gridx = 1;
+        JPasswordField confirmPasswordField = new JPasswordField(20);
+        add(confirmPasswordField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4;
+        add(new JLabel("What is your favourite colour?"), gbc);
+        gbc.gridx = 1;
+        JTextField securityQField = new JTextField(20);
+        add(securityQField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton submitButton = new JButton("Submit");
+        add(submitButton, gbc);
+    }
+}
+   
 
 class doctorpanel extends JPanel{
        private JTabbedPane parentTabbedPane;
