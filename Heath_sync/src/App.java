@@ -57,7 +57,7 @@ class Patientpanel extends JPanel {
     }
 }
 
-class PatientRegistrationPanel extends JPanel {
+class PatientRegistrationPanel extends JFrame {
     PatientRegistrationPanel() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -102,8 +102,6 @@ class PatientRegistrationPanel extends JPanel {
         add(submitButton, gbc);
     }
 }
-   
-
 class doctorpanel extends JPanel{
        private JTabbedPane parentTabbedPane;
        doctorpanel(JTabbedPane jtp) {
@@ -134,7 +132,7 @@ class doctorpanel extends JPanel{
         });
     }
 }
-class RegistrationPanel extends JPanel {
+class RegistrationPanel extends JFrame {
     RegistrationPanel() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -174,18 +172,6 @@ class RegistrationPanel extends JPanel {
         JTextField passwordField = new JTextField(20);
         add(passwordField, gbc);
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        add(new JLabel("Conform Password:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        JTextField conformpasswordField = new JTextField(20);
-        add(conformpasswordField, gbc);
-        gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -193,5 +179,8 @@ class RegistrationPanel extends JPanel {
         gbc.weightx = 0;
         JButton submitButton = new JButton("Submit");
         add(submitButton, gbc);
+        setSize(500,500);
+        setVisible(true);
+        
     }
 }
