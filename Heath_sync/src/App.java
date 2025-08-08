@@ -56,7 +56,7 @@ class Patientpanel extends JPanel {
         });
     }
 }
-//added frame
+
 class PatientRegistrationPanel extends JFrame {
     PatientRegistrationPanel() {
         setLayout(new GridBagLayout());
