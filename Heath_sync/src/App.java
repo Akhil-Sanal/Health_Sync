@@ -424,7 +424,7 @@ class registerpatient {
         page2.add(s);
 
         page2.setVisible(true);
-        page2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        page2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
 
@@ -503,7 +503,7 @@ class registerdoctor {
         page2.add(s);
 
         page2.setVisible(true);
-        page2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        page2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
 
