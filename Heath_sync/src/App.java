@@ -1,5 +1,10 @@
+
+
 import javax.swing.*;
 import java.awt.*;
+import java.sql.*;
+import java.sql.ResultSet;
+import java.util.Objects;
 
 public class App extends JFrame {
     JButton patient;
@@ -43,6 +48,7 @@ public class App extends JFrame {
 
     public static void main(String[] args) {
         new App();
+
     }
 }
 
@@ -75,9 +81,11 @@ class PatientLogin {
 
         JButton loginBtn = new JButton("Login");
         loginBtn.setBounds(50, 180, 80, 30);
+        loginBtn.addActionListener(e->new patientDatabase(userId.getText(),passwd.getText(),patientPage));
 
         JButton registerBtn = new JButton("Register");
         registerBtn.setBounds(150, 180, 100, 30);
+        registerBtn.addActionListener(e->new registerpatient(patientPage));
 
         JButton forgotBtn = new JButton("Forgot?");
         forgotBtn.setBounds(270, 180, 80, 30);
@@ -127,10 +135,12 @@ class DoctorLogin {
         passwd.setBounds(150, 120, 180, 25);
 
         JButton loginBtn = new JButton("Login");
+        loginBtn.addActionListener(e->new doctorDatabase(userId.getText(),passwd.getText(),Doctorpage));
         loginBtn.setBounds(50, 180, 80, 30);
 
         JButton registerBtn = new JButton("Register");
         registerBtn.setBounds(150, 180, 100, 30);
+        registerBtn.addActionListener(e->new registerdoctor(Doctorpage));
 
         JButton forgotBtn = new JButton("Forgot?");
         forgotBtn.setBounds(270, 180, 80, 30);
@@ -151,4 +161,292 @@ class DoctorLogin {
         Doctorpage.setVisible(true);
 
     }
+
+
 }
+class patientDatabase {
+    Connection con;
+    String user, password;
+    JFrame loginpage;
+    boolean found= true;
+    patientDatabase(String u, String p,JFrame loginpage) {
+        this.user = u;
+        this.password = p;
+        this.loginpage=loginpage;
+
+
+        {
+            try {
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+                Statement st = con.createStatement();
+                String q = "select * from patientlogin;";
+                ResultSet rs = st.executeQuery(q);
+
+
+
+                while (rs.next()) {
+                    String a = rs.getString("username");
+                    String b = rs.getString("password");
+
+                    if (Objects.equals(user, a) && Objects.equals(password, b)) {
+                        new patientDashboard(user);
+                        loginpage.dispose();
+                        found=false;
+                    }
+
+                    }
+                if (found) {
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid Username or Password",
+                            "Login Failed",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+}
+class doctorDatabase {
+    Connection con;
+    String user, password;
+    JFrame loginpage;
+
+    doctorDatabase(String u, String p, JFrame loginpage) {
+        this.user = u;
+        this.password = p;
+        this.loginpage = loginpage;
+
+
+        {
+            try {
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+                Statement st = con.createStatement();
+                String q = "select * from doctorlogin;";
+                ResultSet rs = st.executeQuery(q);
+                boolean found = false;
+
+                while (rs.next()) {
+                    String a = rs.getString("username");
+                    String b = rs.getString("password");
+
+                    if (Objects.equals(user, a) && Objects.equals(password, b)) {
+                        new patientDashboard(user);
+                        found = true;
+                        loginpage.dispose();
+                    }
+
+                }
+                if (!found) {
+                    JOptionPane.showMessageDialog(null,
+                            "Invalid Username or Password",
+                            "Login Failed",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+}
+
+
+class registerpatient {
+    registerpatient(JFrame patientpage) {
+        patientpage.dispose();
+
+
+        JFrame page2 = new JFrame("Register");
+        page2.setLocation(400,200);
+        page2.getContentPane().setBackground(new Color(133, 195, 255));
+
+        page2.setLayout(null);
+
+
+        page2.setSize(500, 600);
+
+        JLabel title = new JLabel("REGISTER");
+        title.setForeground(new Color(0));
+        title.setFont(new Font("JetBrains Mono", Font.BOLD, 20));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBounds(140, 20, 200, 30);
+
+        JLabel name = new JLabel("Name:");
+        name.setBounds(50, 80, 100, 25);
+        JTextField name1 = new JTextField(20);
+        name1.setBounds(180, 80, 200, 25);
+
+        JLabel phone = new JLabel("Mobile no:");
+        phone.setBounds(50, 130, 100, 25);
+        JTextField num = new JTextField(10);
+        num.setBounds(180, 130, 200, 25);
+
+        JLabel user = new JLabel("Username:");
+        user.setBounds(50, 180, 100, 25);
+        JTextField userId = new JTextField(20);
+        userId.setBounds(180, 180, 200, 25);
+
+        JLabel pass1 = new JLabel("Password:");
+        pass1.setBounds(50, 230, 100, 25);
+        JPasswordField passwd = new JPasswordField(20);
+        passwd.setBounds(180, 230, 200, 25);
+
+        JLabel pass2 = new JLabel("Confirm Password:");
+        pass2.setBounds(50, 280, 120, 25);
+        JPasswordField confirm = new JPasswordField(20);
+        confirm.setBounds(180, 280, 200, 25);
+
+        JLabel sec = new JLabel("Favorite color:");
+        sec.setBounds(50, 330, 120, 25);
+        JTextField q = new JTextField(20);
+        q.setBounds(180, 330, 200, 25);
+
+        JButton s =new JButton("SUBMIT");
+        s.setBounds(130,400,210,35);
+        s.addActionListener(e->{
+            new PatientLogin();
+            page2.dispose();});
+
+
+
+        page2.add(title);
+        page2.add(name);
+        page2.add(name1);
+        page2.add(phone);
+        page2.add(num);
+        page2.add(user);
+        page2.add(userId);
+        page2.add(pass1);
+        page2.add(passwd);
+        page2.add(pass2);
+        page2.add(confirm);
+        page2.add(sec);
+        page2.add(q);
+        page2.add(s);
+
+        page2.setVisible(true);
+        page2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+
+}
+class registerdoctor {
+    registerdoctor(JFrame Doctorpage) {
+        Doctorpage.dispose();
+
+
+        JFrame page2 = new JFrame("Register");
+        page2.setLocation(400,200);
+        page2.getContentPane().setBackground(new Color(133, 195, 255));
+
+        page2.setLayout(null);
+
+
+        page2.setSize(500, 600);
+
+        JLabel title = new JLabel("REGISTER");
+        title.setForeground(new Color(0));
+        title.setFont(new Font("JetBrains Mono", Font.BOLD, 20));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setBounds(140, 20, 200, 30);
+
+        JLabel name = new JLabel("Name:");
+        name.setBounds(50, 80, 100, 25);
+        JTextField name1 = new JTextField(20);
+        name1.setBounds(180, 80, 200, 25);
+
+        JLabel phone = new JLabel("Mobile no:");
+        phone.setBounds(50, 130, 100, 25);
+        JTextField num = new JTextField(10);
+        num.setBounds(180, 130, 200, 25);
+
+        JLabel user = new JLabel("Username:");
+        user.setBounds(50, 180, 100, 25);
+        JTextField userId = new JTextField(20);
+        userId.setBounds(180, 180, 200, 25);
+
+        JLabel pass1 = new JLabel("Password:");
+        pass1.setBounds(50, 230, 100, 25);
+        JPasswordField passwd = new JPasswordField(20);
+        passwd.setBounds(180, 230, 200, 25);
+
+        JLabel pass2 = new JLabel("Confirm Password:");
+        pass2.setBounds(50, 280, 120, 25);
+        JPasswordField confirm = new JPasswordField(20);
+        confirm.setBounds(180, 280, 200, 25);
+
+        JLabel sec = new JLabel("Favorite color:");
+        sec.setBounds(50, 330, 120, 25);
+        JTextField q = new JTextField(20);
+        q.setBounds(180, 330, 200, 25);
+
+        JButton s =new JButton("SUBMIT");
+        s.setBounds(130,400,210,35);
+        s.addActionListener(e->{
+            new DoctorLogin();
+            page2.dispose();});
+
+
+
+        page2.add(title);
+        page2.add(name);
+        page2.add(name1);
+        page2.add(phone);
+        page2.add(num);
+        page2.add(user);
+        page2.add(userId);
+        page2.add(pass1);
+        page2.add(passwd);
+        page2.add(pass2);
+        page2.add(confirm);
+        page2.add(sec);
+        page2.add(q);
+        page2.add(s);
+
+        page2.setVisible(true);
+        page2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+
+}
+
+
+
+
+
+
+
+class patientDashboard{
+    patientDashboard(String user){
+        JFrame page1=new JFrame("DASHBOARD");
+        JLabel welcome = new JLabel("WELCOME " + user);
+        welcome.setFont(new Font("Times New Roman", Font.BOLD, 28));
+        page1.add(welcome);
+
+        page1.setSize(500,500);
+        page1.setVisible(true);
+        page1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    }
+
+
+
+}
+class doctorDashboard {
+    doctorDashboard(String user) {
+        JFrame page1 = new JFrame("DASHBOARD");
+        JLabel welcome = new JLabel("WELCOME " + user);
+        welcome.setFont(new Font("Times New Roman", Font.BOLD, 28));
+        page1.add(welcome);
+
+        page1.setSize(500, 500);
+        page1.setVisible(true);
+        page1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    }
+}
+
