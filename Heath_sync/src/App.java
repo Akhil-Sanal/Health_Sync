@@ -55,7 +55,7 @@ public class App extends JFrame {
 class PatientLogin {
     PatientLogin() {
         JFrame patientPage = new JFrame("Patient Login");
-        patientPage.getContentPane().setBackground(new Color(0xD5F6F3));
+        patientPage.getContentPane().setBackground(new Color(0x85C3FF));
         patientPage.setSize(400, 300);
         patientPage.setLayout(null);  // absolute positioning
         patientPage.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -126,7 +126,7 @@ class PatientRegister {
         JFrame regPage = new JFrame("Patient Registration");
         regPage.setSize(450, 400);
         regPage.setLayout(null);
-        regPage.getContentPane().setBackground(new Color(0xF0F8FF));
+        regPage.getContentPane().setBackground(new Color(0x85C3FF));
 
         JLabel title = new JLabel("PATIENT REGISTRATION", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 18));
@@ -203,7 +203,7 @@ class PatientRegister {
 class DoctorLogin {
     DoctorLogin() {
         JFrame Doctorpage = new JFrame("Login in");
-        Doctorpage.getContentPane().setBackground(new Color(0xD5F6F3));
+        Doctorpage.getContentPane().setBackground(new Color(0x85C3FF));
         Doctorpage.setSize(400, 300);
         Doctorpage.setLayout(null);  // absolute positioning
         Doctorpage.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
