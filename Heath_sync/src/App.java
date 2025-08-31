@@ -1,5 +1,3 @@
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
@@ -90,7 +88,7 @@ class PatientLogin {
         JButton forgotBtn = new JButton("Forgot?");
         forgotBtn.setBounds(270, 180, 80, 30);
 
-       
+
 
 
         patientPage.add(title);
@@ -189,10 +187,12 @@ class patientDatabase {
                 while (rs.next()) {
                     String a = rs.getString("username");
                     String b = rs.getString("password");
+                    String c= rs.getString("name");
 
                     if (Objects.equals(user, a) && Objects.equals(password, b)) {
-                        new patientDashboard(user);
+                        new patientDashboard(c);
                         loginpage.dispose();
+                        con.close();
                         found=false;
                     }
 
@@ -234,12 +234,15 @@ class doctorDatabase {
                 while (rs.next()) {
                     String a = rs.getString("username");
                     String b = rs.getString("password");
+                    String c= rs.getString("name");
 
                     if (Objects.equals(user, a) && Objects.equals(password, b)) {
-                        new doctorDashboard(user);
+                        new doctorDashboard(c);
+                        con.close();
                         found = true;
                         loginpage.dispose();
                     }
+
 
                 }
                 if (!found) {
@@ -312,6 +315,7 @@ class registerpatient {
         JButton s =new JButton("SUBMIT");
         s.setBounds(130,400,210,35);
         s.addActionListener(e->{
+            new registerDatabase(name1.getText(),num.getText(),userId.getText(),passwd.getText(),q.getText(),'y');
             new PatientLogin();
             page2.dispose();});
 
@@ -391,6 +395,7 @@ class registerdoctor {
         JButton s =new JButton("SUBMIT");
         s.setBounds(130,400,210,35);
         s.addActionListener(e->{
+            new registerDatabase(name1.getText(),num.getText(),userId.getText(),passwd.getText(),q.getText(),'n');
             new DoctorLogin();
             page2.dispose();});
 
@@ -418,6 +423,46 @@ class registerdoctor {
 
 }
 
+class registerDatabase{
+    registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
+        try{
+
+        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+        Statement st = con.createStatement();
+        if(ans=='y') {
+            String q = "insert into patientlogin values(?,?,?,?,?)";
+
+
+            PreparedStatement ps = con.prepareStatement(q);
+            ps.setString(1, name);
+            ps.setString(2, no);
+            ps.setString(3, userId);
+            ps.setString(4, Pass);
+            ps.setString(5, qu);
+            ps.executeUpdate();
+            con.close();
+        }
+        else if(ans=='n'){
+            String q = "insert into doctorlogin values(?,?,?,?,?)";
+
+
+            PreparedStatement ps = con.prepareStatement(q);
+            ps.setString(1, name);
+            ps.setString(2, no);
+            ps.setString(3, userId);
+            ps.setString(4, Pass);
+            ps.setString(5, qu);
+            ps.executeUpdate();
+            con.close();
+
+        }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        }
+}
 
 
 
