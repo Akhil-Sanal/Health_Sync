@@ -177,7 +177,7 @@ class patientDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
                 Statement st = con.createStatement();
                 String q = "select * from patientlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -225,7 +225,7 @@ class doctorDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
                 Statement st = con.createStatement();
                 String q = "select * from doctorlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -427,7 +427,7 @@ class registerDatabase{
     registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
         try{
 
-        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
         Statement st = con.createStatement();
         if(ans=='y') {
             String q = "insert into patientlogin values(?,?,?,?,?)";
