@@ -177,7 +177,7 @@ class patientDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
                 Statement st = con.createStatement();
                 String q = "select * from patientlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -192,7 +192,6 @@ class patientDatabase {
                     if (Objects.equals(user, a) && Objects.equals(password, b)) {
                         new patientDashboard(c);
                         loginpage.dispose();
-                        con.close();
                         found=false;
                     }
 
@@ -203,6 +202,7 @@ class patientDatabase {
                             "Login Failed",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                con.close();
 
 
             } catch (SQLException e) {
@@ -225,7 +225,7 @@ class doctorDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
                 Statement st = con.createStatement();
                 String q = "select * from doctorlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -238,9 +238,10 @@ class doctorDatabase {
 
                     if (Objects.equals(user, a) && Objects.equals(password, b)) {
                         new doctorDashboard(c);
-                        con.close();
                         found = true;
                         loginpage.dispose();
+
+
                     }
 
 
@@ -251,6 +252,7 @@ class doctorDatabase {
                             "Login Failed",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                con.close();
 
 
             } catch (SQLException e) {
@@ -427,7 +429,7 @@ class registerDatabase{
     registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
         try{
 
-        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
         Statement st = con.createStatement();
         if(ans=='y') {
             String q = "insert into patientlogin values(?,?,?,?,?)";
@@ -469,31 +471,110 @@ class registerDatabase{
 
 
 
-class patientDashboard{
-    patientDashboard(String user){
-        JFrame page1=new JFrame("DASHBOARD");
-        JLabel welcome = new JLabel("WELCOME " + user);
-        welcome.setFont(new Font("Times New Roman", Font.BOLD, 28));
-        page1.add(welcome);
+class patientDashboard {
+    patientDashboard(String user) {
+        JFrame page1 = new JFrame("DASHBOARD");
 
-        page1.setSize(500,500);
-        page1.setVisible(true);
+
+        JPanel pan = new JPanel();
+        pan.setLayout(null);
+        pan.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+        pan.setBackground(new Color(133, 195, 255));
+        pan.setBounds(0, 0, 720, 500);
+
+
+        JLabel welcome = new JLabel("WELCOME " + user, SwingConstants.CENTER);
+        welcome.setForeground(new Color(38, 2, 50));
+        welcome.setFont(new Font("Times New Roman", Font.PLAIN, 28));
+        welcome.setBounds(200, 20, 300, 40);
+        pan.add(welcome);
+        JSeparator sep = new JSeparator();
+        sep.setBounds(50, 80, 600, 2);
+        sep.setForeground(Color.BLACK);
+        pan.add(sep);
+
+
+        JLabel list = new JLabel("Prescription List");
+        list.setFont(new Font("Times New Roman", Font.ITALIC, 20));
+        list.setBounds(50, 100, 200, 30);
+        pan.add(list);
+
+        JButton o = new JButton("Date 1");
+        o.setBounds(50, 150, 300, 50);
+        pan.add(o);
+
+        JButton p = new JButton("Date 2");
+        p.setBounds(50, 210, 300, 50);
+        pan.add(p);
+
+
+        page1.add(pan);
+
+        page1.setSize(720, 500);
+        page1.setLayout(null);
         page1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        page1.setLocationRelativeTo(null);
+        page1.setVisible(true);
     }
-
-
-
 }
 class doctorDashboard {
     doctorDashboard(String user) {
         JFrame page1 = new JFrame("DASHBOARD");
+        page1.setLayout(null);
+
+
+        JPanel pan = new JPanel();
+        pan.setLayout(null); // allow absolute positioning
+        pan.setBackground(new Color(133, 195, 255));
+        pan.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+        pan.setBounds(0, 0, 720, 500);
+        page1.add(pan);
+
+
         JLabel welcome = new JLabel("WELCOME " + user);
         welcome.setFont(new Font("Times New Roman", Font.BOLD, 28));
-        page1.add(welcome);
+        welcome.setForeground(new Color(38, 2, 50));
+        welcome.setBounds(270, 20, 400, 40);
+        pan.add(welcome);
 
-        page1.setSize(500, 500);
+
+        JSeparator sep = new JSeparator();
+        sep.setBounds(50, 80, 600, 2);
+        sep.setForeground(Color.BLACK);
+        pan.add(sep);
+
+
+        JButton o = new JButton("Upload prescription");
+        o.setBounds(150, 120, 400, 60);
+        pan.add(o);
+
+        JButton p = new JButton("Disease tracker");
+        p.setBounds(150, 200, 400, 60);
+
+        pan.add(p);
+
+        JButton b = new JButton("Patient tracker");
+        b.setBounds(150, 280, 400, 60);
+        pan.add(b);
+
+
+        page1.setSize(720, 500);
+        page1.setLocationRelativeTo(null);
         page1.setVisible(true);
         page1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 }
+class patientDataset{
+    {
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+            Statement st= con.createStatement();
+            String s="select * from patientdataset;";
+            ResultSet rs=st.executeQuery(s);
 
+
+        } catch (SQLException e) {
+            System.out.println("Not connected");
+        }
+    }
+}
