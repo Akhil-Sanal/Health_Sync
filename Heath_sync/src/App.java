@@ -517,53 +517,7 @@ class patientDashboard {
         page1.setVisible(true);
     }
 }
-class doctorDashboard {
-    doctorDashboard(String user) {
-        JFrame page1 = new JFrame("DASHBOARD");
-        page1.setLayout(null);
 
-
-        JPanel pan = new JPanel();
-        pan.setLayout(null); // allow absolute positioning
-        pan.setBackground(new Color(133, 195, 255));
-        pan.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
-        pan.setBounds(0, 0, 720, 500);
-        page1.add(pan);
-
-
-        JLabel welcome = new JLabel("WELCOME " + user);
-        welcome.setFont(new Font("Times New Roman", Font.BOLD, 28));
-        welcome.setForeground(new Color(38, 2, 50));
-        welcome.setBounds(270, 20, 400, 40);
-        pan.add(welcome);
-
-
-        JSeparator sep = new JSeparator();
-        sep.setBounds(50, 80, 600, 2);
-        sep.setForeground(Color.BLACK);
-        pan.add(sep);
-
-
-        JButton o = new JButton("Upload prescription");
-        o.setBounds(150, 120, 400, 60);
-        pan.add(o);
-
-        JButton p = new JButton("Disease tracker");
-        p.setBounds(150, 200, 400, 60);
-
-        pan.add(p);
-
-        JButton b = new JButton("Patient tracker");
-        b.setBounds(150, 280, 400, 60);
-        pan.add(b);
-
-
-        page1.setSize(720, 500);
-        page1.setLocationRelativeTo(null);
-        page1.setVisible(true);
-        page1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
-}
 class patientDataset{
     {
         try {
