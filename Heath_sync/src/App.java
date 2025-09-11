@@ -87,7 +87,7 @@ class PatientLogin {
 
         JButton forgotBtn = new JButton("Forgot?");
         forgotBtn.setBounds(270, 180, 80, 30);
-
+        forgotBtn.addActionListener(e -> new ForgotPassword(true));
 
 
 
@@ -144,7 +144,7 @@ class DoctorLogin {
 
         JButton forgotBtn = new JButton("Forgot?");
         forgotBtn.setBounds(270, 180, 80, 30);
-
+        forgotBtn.addActionListener(e -> new ForgotPassword(true));
 
         Doctorpage.add(title);
         Doctorpage.add(user);
@@ -164,6 +164,115 @@ class DoctorLogin {
 
 
 }
+class UpdatePassword {
+    UpdatePassword(String user, String phone, String security, String newPass, boolean isPatient, JFrame frameToDispose) {
+        String tableName = isPatient ? "patientlogin" : "doctorlogin";
+        String sqlSelect = "SELECT * FROM " + tableName + " WHERE username = ? AND phoneno = ? AND security_answer = ?";
+        String sqlUpdate = "UPDATE " + tableName + " SET password = ? WHERE username = ?";
+        
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil")) {
+            // Check if credentials are correct
+            try (PreparedStatement selectSt = con.prepareStatement(sqlSelect)) {
+                selectSt.setString(1, user);
+                selectSt.setString(2, phone);
+                selectSt.setString(3, security);
+                
+                ResultSet rs = selectSt.executeQuery();
+                if (rs.next()) {
+                    // Update the password
+                    try (PreparedStatement updateSt = con.prepareStatement(sqlUpdate)) {
+                        updateSt.setString(1, newPass);
+                        updateSt.setString(2, user);
+                        int rowsAffected = updateSt.executeUpdate();
+                        
+                        if (rowsAffected > 0) {
+                            JOptionPane.showMessageDialog(null, "Password updated successfully! ✅");
+                            frameToDispose.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Failed to update password.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid username, phone number, or security answer.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Database Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+}
+class ForgotPassword extends JFrame {
+     ForgotPassword(boolean isPatient) {
+        super(isPatient ? "Patient Forgot Password" : "Doctor Forgot Password");
+        getContentPane().setBackground(new Color(0x85C3FF));
+        setSize(500, 450);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JLabel title = new JLabel("Forgot Password", SwingConstants.CENTER);
+        title.setFont(new Font("JetBrains Mono", Font.BOLD, 20));
+        title.setBounds(100, 20, 300, 30);
+        add(title);
+
+        JLabel userLabel = new JLabel("Username:");
+        userLabel.setBounds(50, 70, 100, 25);
+        add(userLabel);
+        JTextField usernameField = new JTextField();
+        usernameField.setBounds(200, 70, 200, 25);
+        add(usernameField);
+
+        JLabel phoneLabel = new JLabel("Phone No.:");
+        phoneLabel.setBounds(50, 110, 100, 25);
+        add(phoneLabel);
+        JTextField phoneField = new JTextField();
+        phoneField.setBounds(200, 110, 200, 25);
+        add(phoneField);
+
+        JLabel securityLabel = new JLabel("Favorite color:");
+        securityLabel.setBounds(50, 150, 120, 25);
+        add(securityLabel);
+        JTextField securityField = new JTextField();
+        securityField.setBounds(200, 150, 200, 25);
+        add(securityField);
+
+        JLabel newPassLabel = new JLabel("New Password:");
+        newPassLabel.setBounds(50, 190, 150, 25);
+        add(newPassLabel);
+        JPasswordField newPassField = new JPasswordField();
+        newPassField.setBounds(200, 190, 200, 25);
+        add(newPassField);
+
+        JLabel confirmPassLabel = new JLabel("Confirm Password:");
+        confirmPassLabel.setBounds(50, 230, 150, 25);
+        add(confirmPassLabel);
+        JPasswordField confirmPassField = new JPasswordField();
+        confirmPassField.setBounds(200, 230, 200, 25);
+        add(confirmPassField);
+
+        JButton submitBtn = new JButton("Submit");
+        submitBtn.setBounds(150, 280, 200, 30);
+        add(submitBtn);
+
+        submitBtn.addActionListener(e -> {
+            String username = usernameField.getText();
+            String phone = phoneField.getText();
+            String securityAnswer = securityField.getText();
+            String newPassword = new String(newPassField.getPassword());
+            String confirmPassword = new String(confirmPassField.getPassword());
+
+            if (newPassword.equals(confirmPassword)) {
+                new UpdatePassword(username, phone, securityAnswer, newPassword, isPatient, this);
+            } else {
+                JOptionPane.showMessageDialog(this, "Passwords do not match.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+}
+
 class patientDatabase {
     Connection con;
     String user, password;
