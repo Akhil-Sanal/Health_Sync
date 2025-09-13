@@ -2,7 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
+
 
 public class App extends JFrame {
     JButton patient;
@@ -286,7 +289,7 @@ class patientDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
                 Statement st = con.createStatement();
                 String q = "select * from patientlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -334,7 +337,7 @@ class doctorDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
                 Statement st = con.createStatement();
                 String q = "select * from doctorlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -538,7 +541,7 @@ class registerDatabase{
     registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
         try{
 
-        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
         Statement st = con.createStatement();
         if(ans=='y') {
             String q = "insert into patientlogin values(?,?,?,?,?)";
@@ -655,6 +658,7 @@ class doctorDashboard {
 
         JButton o = new JButton("Upload prescription");
         o.setBounds(150, 120, 400, 60);
+        o.addActionListener(e->new uplopre());
         pan.add(o);
 
         JButton p = new JButton("Disease tracker");
@@ -677,7 +681,7 @@ class doctorDashboard {
 class patientDataset{
     {
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
             Statement st= con.createStatement();
             String s="select * from patientdataset;";
             ResultSet rs=st.executeQuery(s);
@@ -686,5 +690,139 @@ class patientDataset{
         } catch (SQLException e) {
             System.out.println("Not connected");
         }
+    }
+}
+
+
+
+class uplopre {
+    private final ArrayList<JTextField> medicineFields = new ArrayList<>();
+
+    uplopre() {
+        JFrame page3 = new JFrame("UPLOAD PRESCRIPTION");
+        page3.setLayout(null);
+
+        JPanel pan = new JPanel();
+        pan.setLayout(null);
+        pan.setBackground(new Color(133, 195, 255));
+        pan.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+        pan.setBounds(0, 0, 700, 600);
+        page3.add(pan);
+
+        JLabel prescription = new JLabel("UPLOAD PRESCRIPTION");
+        prescription.setFont(new Font("Times New Roman", Font.BOLD, 26));
+        prescription.setForeground(new Color(38, 2, 50));
+        prescription.setBounds(180, 20, 400, 40);
+        pan.add(prescription);
+
+        JSeparator sep = new JSeparator();
+        sep.setBounds(50, 70, 600, 2);
+        sep.setForeground(Color.BLACK);
+        pan.add(sep);
+
+        // Date
+        JLabel date = new JLabel("Date:");
+        date.setBounds(50, 90, 100, 25);
+        pan.add(date);
+        JTextField dateField = new JTextField();
+        dateField.setBounds(180, 90, 200, 25);
+        pan.add(dateField);
+
+        // Patient Name
+        JLabel patient = new JLabel("Patient Name:");
+        patient.setBounds(50, 130, 100, 25);
+        pan.add(patient);
+        JTextField patientField = new JTextField();
+        patientField.setBounds(180, 130, 200, 25);
+        pan.add(patientField);
+
+        // Diagnosis
+        JLabel diagLabel = new JLabel("Diagnosis:");
+        diagLabel.setBounds(50, 170, 100, 25);
+        pan.add(diagLabel);
+        JTextField diagnosisField = new JTextField();  // or JTextArea if you want multiline
+        diagnosisField.setBounds(180, 170, 400, 25);
+        pan.add(diagnosisField);
+
+        // Medicine Label
+        JLabel medLabel = new JLabel("Medicines and dosage:");
+        medLabel.setBounds(180, 170, 400, 25);
+        pan.add(medLabel);
+
+        // Panel for medicine fields
+        JPanel medicinePanel = new JPanel();
+        medicinePanel.setLayout(new BoxLayout(medicinePanel, BoxLayout.Y_AXIS));
+        medicinePanel.setBackground(new Color(133, 195, 255));
+
+        JScrollPane scrollPane = new JScrollPane(medicinePanel);
+        scrollPane.setBounds(180, 210, 400, 140);
+        pan.add(scrollPane);
+
+        // Add first medicine field by default
+        addMedicineField(medicinePanel);
+
+        // Add Medicine Button
+        JButton addMedBtn = new JButton("+ Add Medicine");
+        addMedBtn.setBounds(180, 360, 160, 30);
+        pan.add(addMedBtn);
+
+        addMedBtn.addActionListener(e -> addMedicineField(medicinePanel));
+
+        // Submit Button
+        JButton submitBtn = new JButton("Submit");
+        submitBtn.setBounds(270, 420, 150, 35);
+        pan.add(submitBtn);
+
+        submitBtn.addActionListener(e -> {
+            String date1 = dateField.getText().trim();
+            String patientName = patientField.getText().trim();
+            String diagnosis = diagnosisField.getText().trim();
+
+            if (date1.isEmpty() || patientName.isEmpty() || diagnosis.isEmpty()) {
+                JOptionPane.showMessageDialog(page3, "Date, Patient Name, and Diagnosis are required.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            ArrayList<String> meds = new ArrayList<>();
+            for (JTextField field : medicineFields) {
+                String med = field.getText().trim();
+                if (!med.isEmpty()) {
+                    meds.add(med);
+                }
+            }
+
+            if (meds.isEmpty()) {
+                JOptionPane.showMessageDialog(page3, "Please enter at least one medicine.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Simulate data submission
+            StringBuilder sb = new StringBuilder("Prescription submitted successfully!\n");
+            sb.append("Date: ").append(date1).append("\n");
+            sb.append("Patient: ").append(patientName).append("\n");
+            sb.append("Diagnosis: ").append(diagnosis).append("\n");
+            sb.append("Medicines:\n");
+            for (String med : meds) {
+                sb.append(" - ").append(med).append("\n");
+            }
+
+            JOptionPane.showMessageDialog(page3, sb.toString(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            page3.dispose(); // Close the window
+        });
+
+        // JFrame Setup
+        page3.setSize(700, 550);
+        page3.setLocationRelativeTo(null);
+        page3.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        page3.setVisible(true);
+    }
+
+    private void addMedicineField(JPanel panel) {
+        JTextField newField = new JTextField();
+        newField.setMaximumSize(new Dimension(350, 30));
+        medicineFields.add(newField);
+        panel.add(newField);
+        panel.revalidate();
+        panel.repaint();
     }
 }
