@@ -170,16 +170,16 @@ class DoctorLogin {
 class UpdatePassword {
     UpdatePassword(String user, String phone, String security, String newPass, boolean isPatient, JFrame frameToDispose) {
         String tableName = isPatient ? "patientlogin" : "doctorlogin";
-        String sqlSelect = "SELECT * FROM " + tableName + " WHERE username = ? AND phoneno = ? AND security_answer = ?";
+        String sqlSelect = "SELECT * FROM " + tableName + " WHERE username = ? AND number = ? AND q = ?";
         String sqlUpdate = "UPDATE " + tableName + " SET password = ? WHERE username = ?";
-        
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Akhil")) {
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025")) {
             // Check if credentials are correct
             try (PreparedStatement selectSt = con.prepareStatement(sqlSelect)) {
                 selectSt.setString(1, user);
                 selectSt.setString(2, phone);
                 selectSt.setString(3, security);
-                
+
                 ResultSet rs = selectSt.executeQuery();
                 if (rs.next()) {
                     // Update the password
@@ -187,7 +187,7 @@ class UpdatePassword {
                         updateSt.setString(1, newPass);
                         updateSt.setString(2, user);
                         int rowsAffected = updateSt.executeUpdate();
-                        
+
                         if (rowsAffected > 0) {
                             JOptionPane.showMessageDialog(null, "Password updated successfully! ✅");
                             frameToDispose.dispose();
@@ -206,7 +206,7 @@ class UpdatePassword {
     }
 }
 class ForgotPassword extends JFrame {
-     ForgotPassword(boolean isPatient) {
+    ForgotPassword(boolean isPatient) {
         super(isPatient ? "Patient Forgot Password" : "Doctor Forgot Password");
         getContentPane().setBackground(new Color(0x85C3FF));
         setSize(500, 450);
@@ -307,7 +307,7 @@ class patientDatabase {
                         found=false;
                     }
 
-                    }
+                }
                 if (found) {
                     JOptionPane.showMessageDialog(null,
                             "Invalid Username or Password",
@@ -541,41 +541,41 @@ class registerDatabase{
     registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
         try{
 
-        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
-        Statement st = con.createStatement();
-        if(ans=='y') {
-            String q = "insert into patientlogin values(?,?,?,?,?)";
+            Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
+            Statement st = con.createStatement();
+            if(ans=='y') {
+                String q = "insert into patientlogin values(?,?,?,?,?)";
 
 
-            PreparedStatement ps = con.prepareStatement(q);
-            ps.setString(1, name);
-            ps.setString(2, no);
-            ps.setString(3, userId);
-            ps.setString(4, Pass);
-            ps.setString(5, qu);
-            ps.executeUpdate();
-            con.close();
-        }
-        else if(ans=='n'){
-            String q = "insert into doctorlogin values(?,?,?,?,?)";
+                PreparedStatement ps = con.prepareStatement(q);
+                ps.setString(1, name);
+                ps.setString(2, no);
+                ps.setString(3, userId);
+                ps.setString(4, Pass);
+                ps.setString(5, qu);
+                ps.executeUpdate();
+                con.close();
+            }
+            else if(ans=='n'){
+                String q = "insert into doctorlogin values(?,?,?,?,?)";
 
 
-            PreparedStatement ps = con.prepareStatement(q);
-            ps.setString(1, name);
-            ps.setString(2, no);
-            ps.setString(3, userId);
-            ps.setString(4, Pass);
-            ps.setString(5, qu);
-            ps.executeUpdate();
-            con.close();
+                PreparedStatement ps = con.prepareStatement(q);
+                ps.setString(1, name);
+                ps.setString(2, no);
+                ps.setString(3, userId);
+                ps.setString(4, Pass);
+                ps.setString(5, qu);
+                ps.executeUpdate();
+                con.close();
 
-        }
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        }
+    }
 }
 
 
