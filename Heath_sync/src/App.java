@@ -583,10 +583,12 @@ class registerDatabase{
 
 
 
-class patientDashboard {
-    patientDashboard(String user) {
-        JFrame page1 = new JFrame("DASHBOARD");
 
+
+
+class patientDashboard {
+    patientDashboard(String userId) {
+        JFrame page1 = new JFrame("DASHBOARD");
 
         JPanel pan = new JPanel();
         pan.setLayout(null);
@@ -594,34 +596,123 @@ class patientDashboard {
         pan.setBackground(new Color(133, 195, 255));
         pan.setBounds(0, 0, 720, 500);
 
-
-        JLabel welcome = new JLabel("WELCOME " + user, SwingConstants.CENTER);
+        JLabel welcome = new JLabel("WELCOME " + userId, SwingConstants.CENTER);
         welcome.setForeground(new Color(38, 2, 50));
         welcome.setFont(new Font("Times New Roman", Font.PLAIN, 28));
         welcome.setBounds(200, 20, 300, 40);
         pan.add(welcome);
+
         JSeparator sep = new JSeparator();
         sep.setBounds(50, 80, 600, 2);
         sep.setForeground(Color.BLACK);
         pan.add(sep);
-
 
         JLabel list = new JLabel("Prescription List");
         list.setFont(new Font("Times New Roman", Font.ITALIC, 20));
         list.setBounds(50, 100, 200, 30);
         pan.add(list);
 
-        JButton o = new JButton("Date 1");
-        o.setBounds(50, 150, 300, 50);
-        pan.add(o);
+        // Fetch prescriptions only for this userId
+        try {
+            String url = "jdbc:mysql://localhost:3306/healthsync";
+            String username = "root";
+            String password = "sreehari025";
 
-        JButton p = new JButton("Date 2");
-        p.setBounds(50, 210, 300, 50);
-        pan.add(p);
+            Connection conn = DriverManager.getConnection(url, username, password);
 
+            String sql = "SELECT prescription_id, prescription_date, patient_name, symptoms, diagnosis, medicines " +
+                    "FROM prescriptions WHERE userId = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            int y = 150; // button vertical position
+
+            boolean found = false;
+            while (rs.next()) {
+                found = true;
+                int id = rs.getInt("prescription_id");
+                String date = rs.getString("prescription_date");
+                String patientName = rs.getString("patient_name");
+                String symptoms = rs.getString("symptoms");
+                String diagnosis = rs.getString("diagnosis");
+                String medicines = rs.getString("medicines");
+
+                JButton btn = new JButton(date);
+                btn.setBounds(50, y, 300, 40);
+
+                pan.add(btn);
+                y += 60;
+
+                btn.addActionListener(e -> {
+                    // Create a new frame for the prescription details
+                    JFrame detailsFrame = new JFrame("Prescription Details");
+                    detailsFrame.setSize(500, 400);
+                    detailsFrame.setLocationRelativeTo(page1);
+                    detailsFrame.setLayout(new BorderLayout());
+
+                    // Panel styled like a card/box
+                    JPanel box = new JPanel();
+                    box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
+                    box.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.DARK_GRAY, 2),
+                            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+                    ));
+                    box.setBackground(new Color(240, 248, 255)); // light background
+
+                    // Add labels with prescription details
+                    JLabel dateLabel = new JLabel("Date: " + date);
+                    dateLabel.setFont(new Font("Times New Roman", Font.BOLD, 18));
+
+                    JLabel patientLabel = new JLabel("Patient: " + patientName);
+                    patientLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+
+                    JLabel symptomsLabel = new JLabel("Symptoms: " + symptoms);
+                    symptomsLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+
+                    JLabel diagLabel = new JLabel("Diagnosis: " + diagnosis);
+                    diagLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+
+                    JLabel medsLabel = new JLabel("<html>Medicines:<br>" + medicines.replaceAll(";", "<br>") + "</html>");
+                    medsLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+
+                    // Add components to box
+                    box.add(dateLabel);
+                    box.add(Box.createVerticalStrut(10));
+                    box.add(patientLabel);
+                    box.add(Box.createVerticalStrut(10));
+                    box.add(symptomsLabel);
+                    box.add(Box.createVerticalStrut(10));
+                    box.add(diagLabel);
+                    box.add(Box.createVerticalStrut(10));
+                    box.add(medsLabel);
+
+                    // Add panel to frame
+                    detailsFrame.add(box, BorderLayout.CENTER);
+
+                    // Show frame
+                    detailsFrame.setVisible(true);
+                });
+
+            }
+
+            if (!found) {
+                JLabel noData = new JLabel("No prescriptions found.", SwingConstants.CENTER);
+                noData.setBounds(50, 150, 400, 30);
+                noData.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+                pan.add(noData);
+            }
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(page1, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
         page1.add(pan);
-
         page1.setSize(720, 500);
         page1.setLayout(null);
         page1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -629,6 +720,8 @@ class patientDashboard {
         page1.setVisible(true);
     }
 }
+
+
 class doctorDashboard {
     doctorDashboard(String user) {
         JFrame page1 = new JFrame("DASHBOARD");
@@ -695,6 +788,7 @@ class patientDataset{
 
 
 
+
 class uplopre {
     private final ArrayList<JTextField> medicineFields = new ArrayList<>();
 
@@ -720,33 +814,49 @@ class uplopre {
         sep.setForeground(Color.BLACK);
         pan.add(sep);
 
+        // User ID
+        JLabel userIdLabel = new JLabel("User ID:");
+        userIdLabel.setBounds(50, 90, 100, 25);
+        pan.add(userIdLabel);
+        JTextField userIdField = new JTextField();
+        userIdField.setBounds(180, 90, 200, 25);
+        pan.add(userIdField);
+
         // Date
         JLabel date = new JLabel("Date:");
-        date.setBounds(50, 90, 100, 25);
+        date.setBounds(50, 130, 100, 25);
         pan.add(date);
         JTextField dateField = new JTextField();
-        dateField.setBounds(180, 90, 200, 25);
+        dateField.setBounds(180, 130, 200, 25);
         pan.add(dateField);
 
         // Patient Name
         JLabel patient = new JLabel("Patient Name:");
-        patient.setBounds(50, 130, 100, 25);
+        patient.setBounds(50, 170, 100, 25);
         pan.add(patient);
         JTextField patientField = new JTextField();
-        patientField.setBounds(180, 130, 200, 25);
+        patientField.setBounds(180, 170, 200, 25);
         pan.add(patientField);
+
+        // Symptoms
+        JLabel symptomLabel = new JLabel("Symptoms:");
+        symptomLabel.setBounds(50, 210, 100, 25);
+        pan.add(symptomLabel);
+        JTextField symptomField = new JTextField();
+        symptomField.setBounds(180, 210, 400, 25);
+        pan.add(symptomField);
 
         // Diagnosis
         JLabel diagLabel = new JLabel("Diagnosis:");
-        diagLabel.setBounds(50, 170, 100, 25);
+        diagLabel.setBounds(50, 250, 100, 25);
         pan.add(diagLabel);
-        JTextField diagnosisField = new JTextField();  // or JTextArea if you want multiline
-        diagnosisField.setBounds(180, 170, 400, 25);
+        JTextField diagnosisField = new JTextField();
+        diagnosisField.setBounds(180, 250, 400, 25);
         pan.add(diagnosisField);
 
         // Medicine Label
         JLabel medLabel = new JLabel("Medicines and dosage:");
-        medLabel.setBounds(180, 170, 400, 25);
+        medLabel.setBounds(180, 290, 400, 25);
         pan.add(medLabel);
 
         // Panel for medicine fields
@@ -755,7 +865,7 @@ class uplopre {
         medicinePanel.setBackground(new Color(133, 195, 255));
 
         JScrollPane scrollPane = new JScrollPane(medicinePanel);
-        scrollPane.setBounds(180, 210, 400, 140);
+        scrollPane.setBounds(180, 320, 400, 120);
         pan.add(scrollPane);
 
         // Add first medicine field by default
@@ -763,23 +873,25 @@ class uplopre {
 
         // Add Medicine Button
         JButton addMedBtn = new JButton("+ Add Medicine");
-        addMedBtn.setBounds(180, 360, 160, 30);
+        addMedBtn.setBounds(180, 450, 160, 30);
         pan.add(addMedBtn);
 
         addMedBtn.addActionListener(e -> addMedicineField(medicinePanel));
 
         // Submit Button
         JButton submitBtn = new JButton("Submit");
-        submitBtn.setBounds(270, 420, 150, 35);
+        submitBtn.setBounds(270, 500, 150, 35);
         pan.add(submitBtn);
 
         submitBtn.addActionListener(e -> {
+            String userId = userIdField.getText().trim();
             String date1 = dateField.getText().trim();
             String patientName = patientField.getText().trim();
+            String symptoms = symptomField.getText().trim();
             String diagnosis = diagnosisField.getText().trim();
 
-            if (date1.isEmpty() || patientName.isEmpty() || diagnosis.isEmpty()) {
-                JOptionPane.showMessageDialog(page3, "Date, Patient Name, and Diagnosis are required.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (userId.isEmpty() || date1.isEmpty() || patientName.isEmpty() || symptoms.isEmpty() || diagnosis.isEmpty()) {
+                JOptionPane.showMessageDialog(page3, "User ID, Date, Patient Name, Symptoms, and Diagnosis are required.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -796,22 +908,17 @@ class uplopre {
                 return;
             }
 
-            // Simulate data submission
-            StringBuilder sb = new StringBuilder("Prescription submitted successfully!\n");
-            sb.append("Date: ").append(date1).append("\n");
-            sb.append("Patient: ").append(patientName).append("\n");
-            sb.append("Diagnosis: ").append(diagnosis).append("\n");
-            sb.append("Medicines:\n");
-            for (String med : meds) {
-                sb.append(" - ").append(med).append("\n");
-            }
+            String medicines = String.join("; ", meds);
 
-            JOptionPane.showMessageDialog(page3, sb.toString(), "Success", JOptionPane.INFORMATION_MESSAGE);
-            page3.dispose(); // Close the window
+            // Save to DB with userId
+            savePrescription(userId, date1, patientName, symptoms, diagnosis, medicines);
+
+            JOptionPane.showMessageDialog(page3, "Prescription saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            page3.dispose();
         });
 
         // JFrame Setup
-        page3.setSize(700, 550);
+        page3.setSize(700, 600);
         page3.setLocationRelativeTo(null);
         page3.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         page3.setVisible(true);
@@ -825,4 +932,32 @@ class uplopre {
         panel.revalidate();
         panel.repaint();
     }
+
+    private void savePrescription(String userId, String date1, String patientName, String symptoms, String diagnosis, String medicines) {
+        try {
+            String url = "jdbc:mysql://localhost:3306/healthsync";
+            String user = "root";
+            String password = "sreehari025";
+
+            Connection conn = DriverManager.getConnection(url, user, password);
+
+            String sql = "INSERT INTO prescriptions ( prescription_date, patient_name, symptoms, diagnosis, medicines,userId) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(6, userId);
+            pstmt.setString(1, date1);
+            pstmt.setString(2, patientName);
+            pstmt.setString(3, symptoms);
+            pstmt.setString(4, diagnosis);
+            pstmt.setString(5, medicines);
+
+            pstmt.executeUpdate();
+
+            pstmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
+
