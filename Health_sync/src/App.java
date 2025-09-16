@@ -790,6 +790,7 @@ class patientDataset{
 
 
 class uplopre {
+    //upload prescription
     private final ArrayList<JTextField> medicineFields = new ArrayList<>();
 
     uplopre() {
