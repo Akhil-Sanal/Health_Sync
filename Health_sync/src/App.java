@@ -173,7 +173,7 @@ class UpdatePassword {
         String sqlSelect = "SELECT * FROM " + tableName + " WHERE username = ? AND number = ? AND q = ?";
         String sqlUpdate = "UPDATE " + tableName + " SET password = ? WHERE username = ?";
 
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025")) {
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055")) {
             // Check if credentials are correct
             try (PreparedStatement selectSt = con.prepareStatement(sqlSelect)) {
                 selectSt.setString(1, user);
@@ -289,7 +289,7 @@ class patientDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
                 Statement st = con.createStatement();
                 String q = "select * from patientlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -302,7 +302,7 @@ class patientDatabase {
                     String c= rs.getString("name");
 
                     if (Objects.equals(user, a) && Objects.equals(password, b)) {
-                        new patientDashboard(c);
+                        new patientDashboard(a);
                         loginpage.dispose();
                         found=false;
                     }
@@ -337,7 +337,7 @@ class doctorDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
                 Statement st = con.createStatement();
                 String q = "select * from doctorlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -541,7 +541,7 @@ class registerDatabase{
     registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
         try{
 
-            Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
+            Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
             Statement st = con.createStatement();
             if(ans=='y') {
                 String q = "insert into patientlogin values(?,?,?,?,?)";
@@ -616,13 +616,14 @@ class patientDashboard {
         try {
             String url = "jdbc:mysql://localhost:3306/healthsync";
             String username = "root";
-            String password = "sreehari025";
+            String password = "Dream@6055";
 
             Connection conn = DriverManager.getConnection(url, username, password);
 
             String sql = "SELECT prescription_id, prescription_date, patient_name, symptoms, diagnosis, medicines " +
                     "FROM prescriptions WHERE userId = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
+            System.out.println(userId);
             pstmt.setString(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
@@ -774,7 +775,7 @@ class doctorDashboard {
 class patientDataset{
     {
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
             Statement st= con.createStatement();
             String s="select * from patientdataset;";
             ResultSet rs=st.executeQuery(s);
@@ -938,7 +939,7 @@ class uplopre {
         try {
             String url = "jdbc:mysql://localhost:3306/healthsync";
             String user = "root";
-            String password = "sreehari025";
+            String password = "Dream@6055";
 
             Connection conn = DriverManager.getConnection(url, user, password);
 
