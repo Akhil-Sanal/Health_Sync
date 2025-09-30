@@ -2,9 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.Objects;
 
 
 public class App extends JFrame {
@@ -173,7 +172,7 @@ class UpdatePassword {
         String sqlSelect = "SELECT * FROM " + tableName + " WHERE username = ? AND number = ? AND q = ?";
         String sqlUpdate = "UPDATE " + tableName + " SET password = ? WHERE username = ?";
 
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055")) {
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025")) {
             // Check if credentials are correct
             try (PreparedStatement selectSt = con.prepareStatement(sqlSelect)) {
                 selectSt.setString(1, user);
@@ -289,7 +288,7 @@ class patientDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
                 Statement st = con.createStatement();
                 String q = "select * from patientlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -302,7 +301,7 @@ class patientDatabase {
                     String c= rs.getString("name");
 
                     if (Objects.equals(user, a) && Objects.equals(password, b)) {
-                        new patientDashboard(a);
+                        new patientDashboard(c);
                         loginpage.dispose();
                         found=false;
                     }
@@ -337,7 +336,7 @@ class doctorDatabase {
 
         {
             try {
-                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
                 Statement st = con.createStatement();
                 String q = "select * from doctorlogin;";
                 ResultSet rs = st.executeQuery(q);
@@ -541,7 +540,7 @@ class registerDatabase{
     registerDatabase(String name,String no,String userId,String Pass,String qu,char ans){
         try{
 
-            Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+            Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
             Statement st = con.createStatement();
             if(ans=='y') {
                 String q = "insert into patientlogin values(?,?,?,?,?)";
@@ -616,14 +615,13 @@ class patientDashboard {
         try {
             String url = "jdbc:mysql://localhost:3306/healthsync";
             String username = "root";
-            String password = "Dream@6055";
+            String password = "sreehari025";
 
             Connection conn = DriverManager.getConnection(url, username, password);
 
             String sql = "SELECT prescription_id, prescription_date, patient_name, symptoms, diagnosis, medicines " +
                     "FROM prescriptions WHERE userId = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            System.out.println(userId);
             pstmt.setString(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
@@ -757,11 +755,12 @@ class doctorDashboard {
 
         JButton p = new JButton("Disease tracker");
         p.setBounds(150, 200, 400, 60);
-
+        p.addActionListener(e->new DiseaseTracker());
         pan.add(p);
 
         JButton b = new JButton("Patient tracker");
         b.setBounds(150, 280, 400, 60);
+        b.addActionListener(e->new PatientTracker());
         pan.add(b);
 
 
@@ -775,7 +774,7 @@ class doctorDashboard {
 class patientDataset{
     {
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "Dream@6055");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HealthSync", "root", "sreehari025");
             Statement st= con.createStatement();
             String s="select * from patientdataset;";
             ResultSet rs=st.executeQuery(s);
@@ -939,7 +938,7 @@ class uplopre {
         try {
             String url = "jdbc:mysql://localhost:3306/healthsync";
             String user = "root";
-            String password = "Dream@6055";
+            String password = "sreehari025";
 
             Connection conn = DriverManager.getConnection(url, user, password);
 
@@ -962,4 +961,267 @@ class uplopre {
         }
     }
 }
+class DiseaseTracker {
+    DiseaseTracker() {
+        JFrame page = new JFrame("Disease Tracker");
+        page.setLayout(null);
+        page.getContentPane().setBackground(new Color(133, 195, 255));
+        page.setSize(600, 400);
+        page.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        JLabel title = new JLabel("Search Patients by Disease", SwingConstants.CENTER);
+        title.setFont(new Font("Times New Roman", Font.BOLD, 22));
+        title.setBounds(100, 20, 400, 30);
+        page.add(title);
+
+        JLabel diseaseLabel = new JLabel("Disease:");
+        diseaseLabel.setBounds(50, 80, 100, 25);
+        page.add(diseaseLabel);
+
+        JTextField diseaseField = new JTextField();
+        diseaseField.setBounds(150, 80, 250, 25);
+        page.add(diseaseField);
+
+        JButton searchBtn = new JButton("Search");
+        searchBtn.setBounds(420, 80, 100, 25);
+        page.add(searchBtn);
+
+        JTextArea resultArea = new JTextArea();
+        resultArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+        scrollPane.setBounds(50, 130, 470, 200);
+        page.add(scrollPane);
+
+        searchBtn.addActionListener(e -> {
+            String disease = diseaseField.getText().trim();
+            System.out.println(disease);
+
+            if (disease.isEmpty()) {
+                JOptionPane.showMessageDialog(page, "Please enter a disease.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                String url = "jdbc:mysql://localhost:3306/healthsync";
+                String user = "root";
+                String password = "sreehari025";
+
+                Connection conn = DriverManager.getConnection(url, user, password);
+
+                // Assuming 'prescriptions' table stores diagnosis and has a userId linked to patientlogin
+                String sql = "SELECT p.name, p.number " +
+                        "FROM patientlogin p " +
+                        "JOIN prescriptions pr ON p.username = pr.userId " +
+                        "WHERE pr.diagnosis LIKE ?";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, "%" + disease + "%");
+
+                ResultSet rs = pstmt.executeQuery();
+                StringBuilder sb = new StringBuilder();
+
+                boolean found = false;
+                while (rs.next()) {
+                    found = true;
+                    String name = rs.getString("name");
+                    String phone = rs.getString("number");
+                    sb.append("Name: ").append(name).append(" | Phone: ").append(phone).append("\n");
+                }
+
+                if (!found) {
+                    sb.append("No patients found for this disease.");
+                }
+
+                resultArea.setText(sb.toString());
+
+                rs.close();
+                pstmt.close();
+                conn.close();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(page, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        page.setLocationRelativeTo(null);
+        page.setVisible(true);
+    }
+
+}
+
+
+
+class PatientTracker {
+    PatientTracker() {
+        JFrame frame = new JFrame("Patient Tracker");
+        frame.setLayout(new GridLayout(1, 2)); // two panels side by side
+        frame.setSize(900, 500);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        Map<String, Integer> diseaseData = new HashMap<>();
+        Map<String, Integer> symptomData = new HashMap<>();
+
+        try {
+            String url = "jdbc:mysql://localhost:3306/healthsync";
+            String user = "root";
+            String password = "sreehari025";
+            Connection conn = DriverManager.getConnection(url, user, password);
+
+            // === Query 1: Diseases ===
+            String diseaseQuery = "SELECT diagnosis, COUNT(DISTINCT userId) AS patient_count " +
+                    "FROM prescriptions GROUP BY diagnosis";
+            Statement st1 = conn.createStatement();
+            ResultSet rs1 = st1.executeQuery(diseaseQuery);
+            while (rs1.next()) {
+                diseaseData.put(rs1.getString("diagnosis"), rs1.getInt("patient_count"));
+            }
+
+            // === Query 2: Symptoms ===
+            String symptomQuery = "SELECT symptoms, COUNT(*) AS count " +
+                    "FROM prescriptions GROUP BY symptoms";
+            Statement st2 = conn.createStatement();
+            ResultSet rs2 = st2.executeQuery(symptomQuery);
+            while (rs2.next()) {
+                symptomData.put(rs2.getString("symptoms"), rs2.getInt("count"));
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Database Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Add chart panels
+        frame.add(new BarChartPanel(diseaseData, "Patients per Disease"));
+        frame.add(new PieChartPanel(symptomData, "Common Symptoms"));
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+}
+
+// === Custom Bar Chart Panel ===
+// === Custom Bar Chart Panel (Fixed for multiple diseases) ===
+class BarChartPanel extends JPanel {
+    private final Map<String, Integer> data;
+    private final String title;
+
+    BarChartPanel(Map<String, Integer> data, String title) {
+        this.data = data;
+        this.title = title;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (data.isEmpty()) {
+            g.drawString("No Data Available", getWidth() / 2 - 40, getHeight() / 2);
+            return;
+        }
+
+        int width = getWidth();
+        int height = getHeight();
+        int maxVal = Collections.max(data.values());
+
+        int margin = 50; // space around chart
+        int availableWidth = width - 2 * margin;
+        int barCount = data.size();
+        int barWidth = Math.max(30, availableWidth / (barCount * 2)); // dynamic width with minimum
+
+        int yBase = height - margin;
+
+        // Title
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.drawString(title, width / 2 - title.length() * 3, 30);
+
+        // Draw axes
+        g.setColor(Color.BLACK);
+        g.drawLine(margin, yBase, width - margin, yBase); // X axis
+        g.drawLine(margin, margin, margin, yBase);        // Y axis
+
+        // Draw bars
+        int i = 0;
+        for (Map.Entry<String, Integer> entry : data.entrySet()) {
+            int barHeight = (int) ((entry.getValue() / (double) maxVal) * (height - 2 * margin));
+
+            int x = margin + i * (barWidth + 20);
+            int y = yBase - barHeight;
+
+            g.setColor(new Color(100, 150, 255));
+            g.fillRect(x, y, barWidth, barHeight);
+
+            g.setColor(Color.BLACK);
+            g.drawRect(x, y, barWidth, barHeight);
+
+            // Label disease name (shortened if too long)
+            String disease = entry.getKey();
+            if (disease.length() > 8) {
+                disease = disease.substring(0, 7) + "...";
+            }
+            g.drawString(disease, x, yBase + 15);
+
+            // Label patient count
+            g.drawString(String.valueOf(entry.getValue()), x + barWidth / 4, y - 5);
+
+            i++;
+        }
+    }
+}
+
+
+// === Custom Pie Chart Panel ===
+// === Custom Pie Chart Panel ===
+class PieChartPanel extends JPanel {
+    private final Map<String, Integer> data;
+    private final String title;
+
+    PieChartPanel(Map<String, Integer> data, String title) {
+        this.data = data;
+        this.title = title;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (data.isEmpty()) {
+            g.drawString("No Data Available", getWidth() / 2 - 40, getHeight() / 2);
+            return;
+        }
+
+        int width = getWidth();
+        int height = getHeight();
+
+        int total = data.values().stream().mapToInt(Integer::intValue).sum();
+        int startAngle = 0;
+
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.drawString(title, width / 2 - 60, 30);
+
+        int legendX = width - 180;  // legend box position
+        int legendY = 60;
+        int i = 0;
+
+        for (Map.Entry<String, Integer> entry : data.entrySet()) {
+            int arcAngle = (int) ((entry.getValue() / (double) total) * 360);
+
+            // generate color for this slice
+            Color sliceColor = new Color((i * 40) % 255, (i * 80) % 255, (i * 120) % 255);
+            g.setColor(sliceColor);
+
+            // draw pie slice
+            g.fillArc(80, 60, width - 250, height - 150, startAngle, arcAngle);
+
+            // draw legend box
+            g.fillRect(legendX, legendY + i * 25, 15, 15);
+
+            // draw legend text in black
+            g.setColor(Color.BLACK);
+            g.drawString(entry.getKey() + " (" + entry.getValue() + ")", legendX + 25, legendY + 12 + i * 25);
+
+            startAngle += arcAngle;
+            i++;
+        }
+    }
+}
