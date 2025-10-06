@@ -21,7 +21,7 @@ Built using **Java Swing** for the user interface and **MySQL** for database sto
 | **Language** | Java (JDK 8 or above) |
 | **GUI** | Swing & AWT |
 | **Database** | MySQL |
-| **JDBC Driver** | `mysql-connector-j.jar` |
+| **JDBC Driver** | `mysql-connector-j.9.4.0.jar` |
 | **IDE (optional)** | IntelliJ IDEA / NetBeans / VS Code with Java Extension |
 
 ---
